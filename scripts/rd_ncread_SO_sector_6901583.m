@@ -1,11 +1,11 @@
 %% BGC-ARGO NETCDF READER: Open Ocean Monitoring
-%  LECTOR DE DATOS BGC-ARGO: Monitoreo de OcŽano Abierto
+%  LECTOR DE DATOS BGC-ARGO: Monitoreo de OcÅ½ano Abierto
 %
 %  Project: Data Architecture & Biogeochemical Cycles
-%  Proyecto: Arquitectura de Datos y Ciclos Biogeoqu’micos
+%  Proyecto: Arquitectura de Datos y Ciclos Biogeoquâ€™micos
 %
 %  Function: Data Ingestion from Argo NetCDF profiles
-%  Funci—n: Ingesta de perfiles NetCDF de flotadores Argo
+%  Funciâ€”n: Ingesta de perfiles NetCDF de flotadores Argo
 %
 %  Author: Rafael Rasse
 %  Created: 2013-07-02
@@ -15,8 +15,8 @@ function [tmp] = rd_ncread_SO_sector_6901583(fn)
     % Assign filename for traceability / Asignar nombre para trazabilidad
     tmp.filename = fn;
     
-    % --- TIME & GEOLOCATION / TIEMPO Y GEOLOCALIZACIîN ---
-    % Reference date for julian day conversion / Referencia para d’as julianos
+    % --- TIME & GEOLOCATION / TIEMPO Y GEOLOCALIZACIÃ®N ---
+    % Reference date for julian day conversion / Referencia para dâ€™as julianos
     tmp.ref_date = ncread(fn, 'REFERENCE_DATE_TIME')';
     tmp.jday = ncread(fn, 'JULD'); 
     
@@ -24,7 +24,7 @@ function [tmp] = rd_ncread_SO_sector_6901583(fn)
     tmp.LAT = ncread(fn, 'LATITUDE');   % [degrees / grados]
     tmp.LON = ncread(fn, 'LONGITUDE');  % [degrees / grados]
     
-    % --- PHYSICAL VARIABLES / VARIABLES FêSICAS ---
+    % --- PHYSICAL VARIABLES / VARIABLES FÃªSICAS ---
     % Force column vector (:) for table compatibility 
     % Forzar vector columna (:) para asegurar compatibilidad con tablas
     tmp.pres = ncread(fn, 'PRES_ADJUSTED'); 
@@ -34,14 +34,14 @@ function [tmp] = rd_ncread_SO_sector_6901583(fn)
     tmp.lat = tmp.LAT(1);
     tmp.lon = tmp.LON(1); 
     
-    % Physical sensors (Adjusted data) / Sensores f’sicos (Datos ajustados)
+    % Physical sensors (Adjusted data) / Sensores fâ€™sicos (Datos ajustados)
     tmp.T = ncread(fn, 'TEMP_ADJUSTED');    % Temperature / Temperatura
     tmp.T = tmp.T(:); 
     
     tmp.S = ncread(fn, 'PSAL_ADJUSTED');    % Salinity / Salinidad
     tmp.S = tmp.S(:);
     
-    % --- BIOGEOCHEMICAL & OPTICAL / BIOGEOQUêMICA Y îPTICA ---
+    % --- BIOGEOCHEMICAL & OPTICAL / BIOGEOQUÃªMICA Y Ã®PTICA ---
     tmp.chl_adjust = ncread(fn, 'CHLA_ADJUSTED');   % Chlorophyll-a [mg/m3]
     tmp.chl_adjust = tmp.chl_adjust(:);
     
