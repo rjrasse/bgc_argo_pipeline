@@ -1,5 +1,5 @@
 %% MLD CALCULATION (Density Threshold Method)
-%  CçLCULO DE LA CAPA DE MEZCLA (MŽtodo de Umbral de Densidad)
+%  CÃ§LCULO DE LA CAPA DE MEZCLA (MÅ½todo de Umbral de Densidad)
 %
 %  Project: Data Architecture & Open Ocean Monitoring
 %  Function: Calculates Mixed Layer Depth (MLD) starting from 10 dbar reference.
@@ -24,7 +24,7 @@ function mld = mld_sigma0(press, sigma_theta0, sigma_theta0_threshold)
     end
 
     % 1. Use 10 dbar as reference depth (Oceanographic Standard)
-    %    Usar 10 dbar como profundidad de referencia (Est‡ndar Oceanogr‡fico)
+    %    Usar 10 dbar como profundidad de referencia (Estâ€¡ndar Oceanogrâ€¡fico)
     ipres10dbar = find(press >= 10.0, 1);
     
     if isempty(ipres10dbar)
@@ -36,11 +36,11 @@ function mld = mld_sigma0(press, sigma_theta0, sigma_theta0_threshold)
     press_crop = press(ipres10dbar:end);
     sigma_crop = sigma_theta0(ipres10dbar:end);
     
-    % 2. Identify MLD based on threshold / Identificar MLD segœn el umbral
+    % 2. Identify MLD based on threshold / Identificar MLD segÅ“n el umbral
     % Reference: Density difference from the 10 dbar value
     imld = find(abs(sigma_crop - sigma_crop(1)) > sigma_theta0_threshold, 1);
 
-    % 3. Output assignment / Asignaci—n de resultado
+    % 3. Output assignment / Asignaciâ€”n de resultado
     if isempty(imld) 
         mld = NaN; % Profile is fully mixed / Perfil totalmente mezclado
     else
