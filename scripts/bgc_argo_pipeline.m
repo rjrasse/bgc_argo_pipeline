@@ -6,11 +6,11 @@
 clear; close all; clc;
 
 %% 1. INITIALIZATION & DATA INGESTION 
-%  INICIALIZACIîN E INGESTA DE DATOS
+%  INICIALIZACIÃ®N E INGESTA DE DATOS
 
 float_nm = "6901583"; % Float Identifier / Identificador del flotador
 
-% Setup dynamic paths / Configuraci—n de rutas din‡micas
+% Setup dynamic paths / Configuraciâ€”n de rutas dinâ€¡micas
 base_dir = pwd; 
 din = fullfile(base_dir, 'input', float_nm, 'profiles', 'SD');
 dout = fullfile(base_dir, 'output', float_nm, 'processed');
@@ -22,13 +22,13 @@ file_list = dir(fullfile(din, '*.nc'));
 num_files = length(file_list);
 
 % Pre-allocate using cell arrays for memory safety 
-% Pre-asignaci—n mediante celdas para seguridad de memoria
+% Pre-asignaciâ€”n mediante celdas para seguridad de memoria
 all_profiles = cell(num_files, 1);
 
 fprintf('Starting Pipeline for Float: %s\n', float_nm);
 
 %% 2. SIGNAL PROCESSING & NOISE REDUCTION
-%  PROCESAMIENTO DE SE„AL Y REDUCCIîN DE RUIDO
+%  PROCESAMIENTO DE SEâ€žAL Y REDUCCIÃ®N DE RUIDO
 
 
 
@@ -39,7 +39,7 @@ for i = 1:num_files
     tmp = rd_ncread_SO_sector_6901583(fn); 
     
     % Encapsulate in Table for vectorized operations 
-    % Encapsulaci—n en Tabla para operaciones vectorizadas
+    % Encapsulaciâ€”n en Tabla para operaciones vectorizadas
     p = table();
     p.pres = tmp.pres(:);
     p.T = tmp.T(:);
@@ -51,7 +51,7 @@ for i = 1:num_files
     p.time = repmat(tmp.jday + datenum([1950 1 1]), height(p), 1);
     
     % OPTIMIZED SPIKE REMOVAL (Vectorized movmedian)
-    % ELIMINACIîN DE PICOS OPTIMIZADA (Mediana m—vil vectorizada)
+    % ELIMINACIÃ®N DE PICOS OPTIMIZADA (Mediana mâ€”vil vectorizada)
     % This replaces the slow 'slidefun' loop / Reemplaza el bucle lento de 'slidefun'
     
     p.chl_smooth = movmedian(p.chl, 5, 'omitnan');
@@ -64,14 +64,14 @@ for i = 1:num_files
 end
 
 % Merge all profiles into a Master Dataset
-% Uni—n de todos los perfiles en un Dataset Maestro
+% Uniâ€”n de todos los perfiles en un Dataset Maestro
 sd = vertcat(all_profiles{:});
 
 %% 3. THERMODYNAMIC INTEGRATION (TEOS-10 Standard)
-%  INTEGRACIîN TERMODINçMICA (Est‡ndar TEOS-10)
+%  INTEGRACIÃ®N TERMODINÃ§MICA (Estâ€¡ndar TEOS-10)
 
 % Calculate derived physical variables using GSW Library
-% C‡lculo de variables f’sicas derivadas usando la librer’a GSW
+% Câ€¡lculo de variables fâ€™sicas derivadas usando la librerâ€™a GSW
 
 sd.SA = gsw_SA_from_SP(sd.S, sd.press, sd.lon, sd.lat);   % Absolute Salinity
 sd.CT = gsw_CT_from_t(sd.SA, sd.T, sd.press);          % Conservative Temp
@@ -79,7 +79,7 @@ sd.sigma0 = gsw_sigma0(sd.SA, sd.CT);                 % Potential Density
 sd.spiciness = gsw_spiciness0(sd.SA, sd.CT);          % Water mass analysis
 
 %% 4. FEATURE ENGINEERING: LAYER DETECTION
-%  INGENIERêA DE VARIABLES: DETECCIîN DE CAPAS
+%  INGENIERÃªA DE VARIABLES: DETECCIÃ®N DE CAPAS
 
 
 
@@ -92,7 +92,7 @@ for d = 1:length(unique_days)
     p_sub = sd(idx, :);
     
     % MIXED LAYER DEPTH (MLD) Calculation
-    % C‡lculo de la Profundidad de la Capa de Mezcla
+    % Câ€¡lculo de la Profundidad de la Capa de Mezcla
     mld_val = NaN;
     valid_sig = ~isnan(p_sub.sigma0);
     if any(valid_sig)
@@ -112,11 +112,11 @@ for d = 1:length(unique_days)
 end
 
 %% 5. MULTI-FORMAT DATA EXPORT
-%  EXPORTACIîN DE DATOS (Formato .dat Robusto)
+%  EXPORTACIÃ®N DE DATOS (Formato .dat Robusto)
 
 % 5.1 Export KPIs Summary as .dat (Tab-separated)
 % Exportar Resumen de KPIs en .dat (Separado por tabuladores)
-% Usamos fprintf para asegurar precisi—n decimal m‡xima
+% Usamos fprintf para asegurar precisiâ€”n decimal mâ€¡xima
 kpi_fn = fullfile(dout, strcat(float_nm, '_summary_kpi.dat'));
 fid = fopen(kpi_fn, 'w');
 % Header / Cabecera
@@ -130,14 +130,14 @@ end
 fclose(fid);
 
 % 5.2 Export XYZ Cleaned Data for Visualization (ASCII .dat)
-% Exportar Datos XYZ limpios para visualizaci—n en .dat
+% Exportar Datos XYZ limpios para visualizaciâ€”n en .dat
 % Ideal para ODV, Python o GMT
 clean_idx = ~isnan(sd.chl_smooth);
 xyz_output = [sd.time(clean_idx), sd.press(clean_idx), sd.chl_smooth(clean_idx)];
 
-% Usamos la extensi—n .dat expl’citamente
+% Usamos la extensiâ€”n .dat explâ€™citamente
 fn_xyz = fullfile(dout, strcat(float_nm, '_chl_xyz.dat'));
 save(fn_xyz, 'xyz_output', '-ascii');
 
-fprintf('Pipeline Completed Successfully / Pipeline Finalizado con ƒxito\n');
+fprintf('Pipeline Completed Successfully / Pipeline Finalizado con Æ’xito\n');
 fprintf('Files saved in .dat format for maximum precision.\n');
